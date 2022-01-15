@@ -49,6 +49,8 @@ function markupInfoNode(data) {
 function getCountry() {
     const inputValue = inputNode.value;
     if (inputValue !== '') {
+        clearNode();
+
         console.log('inputValue', !!inputValue);
         console.log('inputNode.value', inputNode.value);
 
@@ -72,6 +74,8 @@ function getCountry() {
                 Notify.failure('Oops, there is no country with that name');
             });
     } else {
+        clearNode();
+
         console.log('empty');
     }
 }
