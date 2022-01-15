@@ -15,26 +15,16 @@ function clearNode() {
     infoNode.innerHTML = '';
 }
 
-function getCountry() {
-    const inputValue = inputNode.value;
-    fetchCountries(inputValue)
-        .then(data => {
-            if (data.length > 10) {
-                clearNode();
-                Notify.info('Too many matches found. Please enter a more specific name.');
-            } else {
-                clearNode();
+function markupListNode(data) {
+    const markup = data.map(item => {
+        return `<li class="item"><img src="${item.flags.svg}" alt=""><p>${item.name.official}</p></li>`;
+    });
+    listNode.insertAdjacentHTML('afterbegin', markup.join(''));
+}
 
-                if (data.length >= 2 && data.length <= 10) {
-                    const markup = data.map(item => {
-                        return `<li class="item"><img src="${item.flags.svg}" alt=""><p>${item.name.official}</p></li>`;
-                    });
-                    listNode.insertAdjacentHTML('afterbegin', markup.join(''));
-                } else {
-                    const markupSecond = data.map(item => {
-                        clearNode();
-
-                        return `<ul>
+function markupInfoNode(data) {
+    const markupSecond = data.map(item => {
+        return `<ul>
     <li>
         <img src="${item.flags.svg}" alt="">
         <p class="counntry-header">${item.name.official}</p>
@@ -52,15 +42,36 @@ function getCountry() {
         <p class="coutry-value">${Object.values(item.languages)}</p>
     </li>
 </ul>`;
-                    });
-                    infoNode.insertAdjacentHTML('afterbegin', markupSecond.join(''));
-                }
-            }
+    });
+    infoNode.insertAdjacentHTML('afterbegin', markupSecond.join(''));
+}
 
-            // listNode.innerHTML = data.map(item => item.name.official).join('');
-        })
-        .catch(() => {
-            clearNode();
-            Notify.failure('Oops, there is no country with that name');
-        });
+function getCountry() {
+    const inputValue = inputNode.value;
+    if (inputValue !== '') {
+        console.log('inputValue', !!inputValue);
+        console.log('inputNode.value', inputNode.value);
+
+        fetchCountries(inputValue)
+            .then(data => {
+                if (data.length > 10) {
+                    clearNode();
+                    Notify.info('Too many matches found. Please enter a more specific name.');
+                } else {
+                    if (data.length >= 2 && data.length <= 10) {
+                        clearNode();
+                        markupListNode(data);
+                    } else {
+                        clearNode();
+                        markupInfoNode(data);
+                    }
+                }
+            })
+            .catch(() => {
+                clearNode();
+                Notify.failure('Oops, there is no country with that name');
+            });
+    } else {
+        console.log('empty');
+    }
 }
